@@ -22,10 +22,9 @@ If you have any questions please reach out.
 
 # Additional information I did not have time to address
 ## Extension ideas
-* Create an API doc (_like OpenAPI_) to define the service.  Build from the service def, and offer it out to the clients.
-* Add Docstrings comments.
+* Add Method documentaion, and also Protoc file somments.
 * Move the GeoLite2-County database out into a reddis cache or other in-memory object to improve performance.
 * The API doc can define the error response.  
 * Decide what the events are that should be logged. Maybe "AuhtorizeUserInRegion" or something.
-* Make a Docker-in-docker version to reduce the docker image size.
+* Make the DB connect happen on creation.  WOUld require the API serevice def to have a close function to hand the clean up.
 * expand the health check to include a database access check. Possibly a timing also.

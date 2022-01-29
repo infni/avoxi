@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# protobuf auto-generated code
+*.pb.go
+*.pb.gw.go
+*.swagger.json

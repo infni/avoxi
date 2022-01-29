@@ -1,0 +1,35 @@
+syntax = "proto3";
+package api;
+
+import "google/api/annotations.proto";
+
+option go_package = "ipauthorize/api";
+
+message HealthResponse{
+    string now = 1;
+}
+
+message HealthRequest{ }
+
+message IpAuthorizeRequest{
+  string Ip = 1;
+  repeated string CountryNames = 2;
+}
+
+message IpAuthorizeResponse{
+  bool IsAuthorized = 1;
+}
+
+service IpAuthorize {
+    rpc Health(HealthRequest) returns (HealthResponse){
+      option (google.api.http) = {
+        get: "/health"
+      };
+    }
+    rpc IpAuhtorize(IpAuthorizeRequest) returns (IpAuthorizeResponse){
+      option (google.api.http) = {
+        post: "/ipauthorize"
+        body: "*"
+      };
+    }
+}
