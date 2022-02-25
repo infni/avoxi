@@ -9,7 +9,7 @@ sudo apt-get remove docker docker-engine docker.io containerd runc
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
 
-if [ ! /usr/share/keyrings/docker-archive-keyring.gpg ]; then
+if [ ! -f /usr/share/keyrings/docker-archive-keyring.gpg ]; then
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 fi
 
@@ -27,7 +27,7 @@ sudo chgrp docker "$DOCKER_DIR"
 
 sudo mkdir -p /etc/docker/
 
-cat <<EOF >> ~/.bashrc
+cat <<'EOF' >> ~/.bashrc
 
 # start docker on login if it isn't already started
 DOCKER_DISTRO="Ubuntu"
@@ -41,17 +41,15 @@ if [ ! -S "$DOCKER_SOCK" ]; then
 fi
 EOF
 
-# this 'sudo' call wasn't working at last run, and I used nano to make the file.
-sudo cat <<EOF > /etc/docker/daemon.json
+sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
 {
   "hosts": ["unix:///mnt/wsl/shared-docker/docker.sock"],
   "iptables": false
 }
-EOF
+EOF'
 
-# this 'sudo' call wasn't working at last run, and I used `sudo visudo`` to append to the file.
-sudo cat <<EOF >> /etc/sudoers
+sudo bash -c 'cat <<EOF >> /etc/sudoers
 
 # stop docker from asking for a password every time you log in
 %docker ALL=(ALL)  NOPASSWD: /usr/bin/dockerd
-EOF
+EOF'
