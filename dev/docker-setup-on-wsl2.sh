@@ -53,3 +53,6 @@ sudo bash -c 'cat <<EOF >> /etc/sudoers
 # stop docker from asking for a password every time you log in
 %docker ALL=(ALL)  NOPASSWD: /usr/bin/dockerd
 EOF'
+
+echo "### --> Restart your WSL instance (all isntances) using '/mnt/c/Windows/System32/wsl.exe --shutdown' or just 'wsl --shutdown' from powershell"
+echo "after restarting, you can verify docker by using the command 'docker ps -a' "

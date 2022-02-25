@@ -1,7 +1,7 @@
 FROM golang:1.17 as GOBASE
 
 RUN apt-get update \
-    && apt-get -y install unzip
+    && apt-get install -y protobuf-compiler zip unzip gcc
 
 WORKDIR /app
 
@@ -15,15 +15,12 @@ RUN PROTOC_VERSION="3.19.4" \
     && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \
     && rm -f $PROTOC_ZIP
 
-RUN go mod download
-
 RUN go get github.com/grpc-ecosystem/grpc-gateway/v2/internal/descriptor@v2.7.3
-RUN go mod download google.golang.org/grpc/cmd/protoc-gen-go-grpc
-RUN go install \
-        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-        google.golang.org/protobuf/cmd/protoc-gen-go \
-        google.golang.org/grpc/cmd/protoc-gen-go-grpc
+RUN go install -v \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    google.golang.org/protobuf/cmd/protoc-gen-go \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc 
 
 RUN ./dev/build-service.sh \
     && go vet ./... \

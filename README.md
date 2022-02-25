@@ -1,30 +1,52 @@
-# avoxi
-## Coding excersise
-Scenario (note, this is fictional, but gives a sense of the types of requests we might encounter):
-Our product team has heard from several customers that we restrict users to logging in to their UI accounts from selected countries to prevent them from outsourcing their work to others.  For an initial phase one we're not going to worry about VPN connectivity, only the presented IP address.
+# Running this exmaple project on WIndows 10 WSL and VS Code
+## Installation
+### WSL 2 on WIndows 10
+1. [Install WSL as a feature of your Windows 10.](https://docs.microsoft.com/en-us/windows/wsl/install)
+    * [You will need to make sure WSL is enabled and on version 2 for your windows edition.](https://docs.microsoft.com/en-us/windows/wsl/install#upgrade-version-from-wsl-1-to-wsl-2)
+1. [You will need to make sure you have VSCode installed.](https://code.visualstudio.com/download)
+1. [Install the extension to enbable VSCode to work with WSL.](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)
+1. Clone this repo.
 
-The team has designed a solution where the customer database will hold the white listed countries and the API gateway will capture the requesting IP address, check the target customer for restrictions, and send the data elements to a new service you are going to create.  
-The new service will be an HTTP-based API that receives an IP address and a white list of countries.  The API should return an indicator if the IP address is within the listed countries.  You can get a data set of IP addresses to country mappings from https://dev.maxmind.com/geoip/geoip2/geolite2/.
+### Troublshooting internet access on WSL
+**["Temporary failure resolving {url}"](https://stackoverflow.com/questions/55649015/could-not-resolve-host-github-com-only-in-windows-bash)**  
+Instruction copied here for postarity. On the instance;  
+`sudo bash -c 'echo "[network]\ngenerateResolvConf = false" > /etc/wsl.conf && rm /etc/resolv.conf && echo "nameserver 1.1.1.1" > /etc/resolv.conf'`  
 
-We do our backend development in Go (Golang) and Python and prefer solutions in those languages, but we can accept submissions in common backend languages (Java, Node.js, C, C++, C#, etc).  We'll be explicitly looking at coding style, code organization, API design, and operational/maintenance aspects such as logging and error handling. 
+### Installing Docker on WSL, protoc engine and GO
+Run these commands;
+```
+./dev/docker-setup-on-wsl.sh
+./dev/install-go.sh
+./dev/install-protoc.sh
+./dev/build-service.sh
+```
 
-We'll also be giving bonus points for things like
- * Including a Docker file for the running service
- * Including a Kubernetes YAML file for running the service in an existing cluster
- * Exposing the service as gRPC in addition to HTTP
- * Documenting a plan for keeping the mapping data up to date.  Extra bonus points for implementing the solution.
- * Other extensions to the service you think would be worthwhile.  If you do so, please include a brief description of the feature and justification for its inclusion.  Think of this as what you would have said during the design meeting to convince your team the effort was necessary.  
+### Testing
+Tests are done with Testify.  They are located in the `/test` folder. You can run them manually by using the same command the docker file uses; `go test -timeout 2s -v ./test/...` (or simply `go test ./...`)
 
-We'd like you to spend no more than 4 hours working on the solution over the next two days.  We can accept submissions in two mechanisms.
-1. Our preferred mechanism is for you to create a project in your personal Github, Bitbucket or similar service and send us a link.
-2. Create a ZIP file and place it in a Google Drive, Dropbox, or other file sharing service and send us a link.
-If you have any questions please reach out.  
+Also in the test folder is the test client.  This quick go program proves the client created by the protoc can talk to the server created by the protoc. While not a robust test suite, it demonstrates that the client can be tested from the server code if you need to. You can compile it using a provided script (`dev\test-client-compile.sh`).
 
-# Additional information I did not have time to address
-## Extension ideas
-* Add Method documentaion, and also Protoc file somments.
-* Move the GeoLite2-County database out into a reddis cache or other in-memory object to improve performance.
-* The API doc can define the error response.  
-* Decide what the events are that should be logged. Maybe "AuhtorizeUserInRegion" or something.
-* Make the DB connect happen on creation.  WOUld require the API serevice def to have a close function to hand the clean up.
-* expand the health check to include a database access check. Possibly a timing also.
+### Building
+The project can be built youself (`go build -o ./bin/ipauthorize ./cmd/ipauthorize`), though it is intended to be run as a container.
+
+You can create the docker image with;
+```
+docker build . -t dockersample
+```
+
+### Troublshooting "Docker has no internet access"
+In WSL2, I had to use the host network because the Docker engine has no access to the internet.
+```
+docker build --network host . -t dockersample
+docker run --network host -p 9080:9080 -p 9079:0079 $(docker image ls dockersample -q)
+```
+
+### Running
+```
+docker run -p 9080:9080 -p 9079:0079 $(docker image ls dockersample -q)
+```
+You can now use the sample call script; `dev/samplecall.sh`  
+--or--  
+You can use the compiled test client from earlier; `bin/testclient`
+
+
