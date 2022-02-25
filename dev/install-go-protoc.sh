@@ -8,6 +8,7 @@ GO_FILENAME="go${GO_VERSION}.linux-amd64.tar.gz"
 wget "https://dl.google.com/go/${GO_FILENAME}"
 tar -xvf ${GO_FILENAME}
 sudo mv go /usr/local
+rm -f $GO_FILENAME
 
 cat <<'EOF' >> ~/.bashrc
 
@@ -28,8 +29,7 @@ sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
 rm -f $PROTOC_ZIP
 
 go install \
-    google.golang.org/protobuf/cmd/protoc-gen-go@latest \
-    google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest \
-    github.com/grpc-ecosystem/grpc-gateway/v2@latest 
-
-source ../dev/build-service.sh
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    google.golang.org/protobuf/cmd/protoc-gen-go \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc 
