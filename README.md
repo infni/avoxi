@@ -38,7 +38,7 @@ docker build . -t dockersample
 In WSL2, I had to use the host network because the Docker engine has no access to the internet.
 ```
 docker build --network host . -t dockersample
-docker run --network host -p 9080:9080 -p 9079:0079 $(docker image ls dockersample -q)
+docker run --network host -p 9080:9080 -p 9079:9079 $(docker image ls dockersample -q)
 ```
 
 ### Running
