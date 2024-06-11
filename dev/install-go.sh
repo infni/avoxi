@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/sh -v
 
 sudo apt-get update
 sudo apt-get install -y protobuf-compiler zip unzip gcc
 
-GO_VERSION="1.17.7"
+GO_VERSION="1.22.3"
 GO_FILENAME="go${GO_VERSION}.linux-amd64.tar.gz"
 wget "https://dl.google.com/go/${GO_FILENAME}"
 tar -xvf ${GO_FILENAME}

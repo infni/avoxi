@@ -41,6 +41,9 @@ RUN mkdir -p $PUB \
 # docker-in-docker
 FROM gcr.io/distroless/base
 
+RUN sudo apt-get update && \
+    sudo apt-get install -y ca-certificates
+
 WORKDIR /pub
 
 COPY --from=GOBASE /pub .
